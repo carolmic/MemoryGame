@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/css/styles.css" />
+		<title>Memory Game</title>
+	</head>
+	<body>
+		<section class="memory-game">
+			<div class="memory-card" data-flag="brazil">
+				<img class="front-face" src="/img/br.svg" alt="Brazil" />
+				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+			</div>
+			<div class="memory-card" data-flag="brazil">
+				<img class="front-face" src="/img/br.svg" alt="Brazil" />
+				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+			</div>
+
+			<div class="memory-card" data-flag="italy">
+				<img class="front-face" src="/img/it.svg" alt="Italy" />
+				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+			</div>
+			<div class="memory-card" data-flag="italy">
+				<img class="front-face" src="/img/it.svg" alt="Italy" />
+				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+			</div>
+			<div class="memory-card" data-flag="france">
+				<img class="front-face" src="/img/fr.svg" alt="France" />
+				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+			</div>
+			<div class="memory-card" data-flag="france">
+				<img class="front-face" src="/img/fr.svg" alt="France" />
+				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+			</div>
+			<div class="memory-card" data-flag="japan">
+				<img class="front-face" src="/img/jp.svg" alt="Japan" />
+				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+			</div>
+			<div class="memory-card" data-flag="japan">
+				<img class="front-face" src="/img/jp.svg" alt="Japan" />
+				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+			</div>
+			<div class="memory-card" data-flag="australia">
+				<img class="front-face" src="/img/au.svg" alt="Australia" />
+				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+			</div>
+			<div class="memory-card" data-flag="australia">
+				<img class="front-face" src="/img/au.svg" alt="Australia" />
+				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+			</div>
+			<div class="memory-card" data-flag="korea">
+				<img class="front-face" src="/img/kr.svg" alt="Korea" />
+				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+			</div>
+			<div class="memory-card" data-flag="korea">
+				<img class="front-face" src="/img/kr.svg" alt="Korea" />
+				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+			</div>
+		</section>
+
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="/js/index.js"></script>
+		<script>
+			const socket = io();
+		</script>
+	</body>
+</html>
