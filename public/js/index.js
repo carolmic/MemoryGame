@@ -1,6 +1,6 @@
 const socket = io();
 const cards = document.querySelectorAll(".memory-card");
-const cardsArray = Array.from(cards);
+let cardsArray = Array.from(cards);
 const flags = [
 	{
 		src: "/img/br.svg",
@@ -82,7 +82,7 @@ function checkForMatch() {
 	if (isMatch) {
 		socket.emit("find match", {
 			firstCard: firstCard.dataset.flag,
-			secondCard: secondCard.dataset.flag
+			secondCard: secondCard.dataset.flag,
 		});
 		disableCards();
 		return;
@@ -107,7 +107,7 @@ function unflipCards() {
 
 		socket.emit("unflip cards", {
 			firstCard: firstCard.dataset.flag,
-			secondCard: secondCard.dataset.flag
+			secondCard: secondCard.dataset.flag,
 		});
 
 		resetBoard();
@@ -130,15 +130,19 @@ function resetBoard() {
 		card.firstElementChild.setAttribute("alt", flags[i].alt);
 		card.setAttribute("data-flag", flags[i].alt);
 	}
-	socket.emit("set order", cardsArray.map((card) => {
-		return {
-			dataset: card.dataset.flag,
-			firstElementChild: {
-				src: card.firstElementChild.src,
-				alt: card.firstElementChild.alt
-			}
-		};
-	}));
+	console.log("cardsArray", cardsArray);
+	socket.emit(
+		"set order",
+		cardsArray.map((card) => {
+			return {
+				dataset: card.dataset.flag,
+				firstElementChild: {
+					src: card.firstElementChild.src,
+					alt: card.firstElementChild.alt,
+				},
+			};
+		})
+	);
 })();
 cards.forEach((card) => card.addEventListener("click", flipCard));
 
@@ -150,8 +154,12 @@ socket.on("card flipped", (data) => {
 });
 
 socket.on("cards unflipped", (data) => {
-	const firstCard = document.querySelector(`.memory-card[data-flag="${data.firstCard}"]`);
-	const secondCard = document.querySelector(`.memory-card[data-flag="${data.secondCard}"]`);
+	const firstCard = document.querySelector(
+		`.memory-card[data-flag="${data.firstCard}"]`
+	);
+	const secondCard = document.querySelector(
+		`.memory-card[data-flag="${data.secondCard}"]`
+	);
 	if (firstCard && secondCard) {
 		firstCard.classList.remove("flip");
 		secondCard.classList.remove("flip");
@@ -159,8 +167,12 @@ socket.on("cards unflipped", (data) => {
 });
 
 socket.on("match found", (data) => {
-	const firstCard = document.querySelector(`.memory-card[data-flag="${data.firstCard}"]`);
-	const secondCard = document.querySelector(`.memory-card[data-flag="${data.secondCard}"]`);
+	const firstCard = document.querySelector(
+		`.memory-card[data-flag="${data.firstCard}"]`
+	);
+	const secondCard = document.querySelector(
+		`.memory-card[data-flag="${data.secondCard}"]`
+	);
 	if (firstCard && secondCard) {
 		firstCard.removeEventListener("click", flipCard);
 		secondCard.removeEventListener("click", flipCard);
@@ -168,12 +180,12 @@ socket.on("match found", (data) => {
 });
 
 socket.on("order set", (data) => {
-	console.log(data);
-	data.forEach((card) => {
-		console.log(card.dataset);
-		const cardElement = document.querySelector(`.memory-card[data-flag="${card.dataset}"]`);
-		cardElement.firstElementChild.setAttribute("src", card.firstElementChild.src);
-		cardElement.firstElementChild.setAttribute("alt", card.firstElementChild.alt);
+	let player2Cards = document.querySelectorAll(".memory-card");
 
-	});
+	for (let i = 0; i < player2Cards.length; i++) {
+		player2Cards[i].innerHTML = `
+			<img src="${data[i].firstElementChild.src}" alt="${data[i].firstElementChild.alt}" class="front-face" />
+			<img src="/img/olympics.svg" alt="back" class="olympics" />
+		`;
+	};
 });
