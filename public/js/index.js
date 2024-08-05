@@ -184,7 +184,7 @@ socket.on("order set", (data) => {
 	for (let i = 0; i < player2Cards.length; i++) {
 		player2Cards[i].innerHTML = `
 			<img src="${data[i].firstElementChild.src}" alt="${data[i].firstElementChild.alt}" class="front-face" />
-			<img src="/img/olympics.svg" alt="back" class="olympics" />
+			<img src="/img/olympics.svg" alt="Olympics" class="back-face" />
 		`;
 		player2Cards[i].setAttribute("data-flag", data[i].dataset);
 	};
