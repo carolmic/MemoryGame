@@ -6,6 +6,7 @@ const path = require("path");
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
+const players = [];
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -18,6 +19,18 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
 	console.log("a user connected");
 
+	socket.on("start game", (data) => {
+		data.push(players);
+		socket.broadcast.emit("game started", data);
+		socket.emit("start game", data);
+	})
+
+	socket.on("join", (data) => {
+		players.push(data);
+		socket.broadcast.emit("joined", data);
+		socket.emit("join", data);
+	});
+	
 	socket.on("set order", (data) => {
 		console.log("set order", data);
 		socket.broadcast.emit("order set", data);
@@ -37,7 +50,7 @@ io.on("connection", (socket) => {
 		console.log("find match", data);
 		socket.broadcast.emit("match found", data);
 	});
-	
+
 	socket.on("disconnect", () => {
 		console.log("user disconnected");
 	});
@@ -46,3 +59,5 @@ io.on("connection", (socket) => {
 server.listen(3000, () => {
 	console.log("server running at http://localhost:3000");
 });
+
+module.exports = {players};

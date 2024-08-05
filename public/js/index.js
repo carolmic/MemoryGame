@@ -1,3 +1,5 @@
+
+
 const socket = io();
 const cards = document.querySelectorAll(".memory-card");
 let cardsArray = Array.from(cards);
@@ -51,7 +53,6 @@ const flags = [
 		alt: "korea",
 	},
 ];
-
 let hasFlippedCard = false;
 let lockBoard = false;
 let firstCard, secondCard;
@@ -188,4 +189,13 @@ socket.on("order set", (data) => {
 		`;
 		player2Cards[i].setAttribute("data-flag", data[i].dataset);
 	};
+});
+
+socket.on("joined", (data) => {
+  document.getElementById("players-table").innerHTML += `<tr><td>${data}</td></tr>`
+});
+
+socket.on("game started", (data) => {
+	console.log("game started", data);
+	document.getElementById("start-game").hidden = true;
 });

@@ -7,6 +7,27 @@
 		<title>Memory Game</title>
 	</head>
 	<body>
+		<div class="register-player" id="register">
+			<div class="info-box">
+				<div class="form-group">
+					<input
+						type="text"
+						class="form-input"
+						id="name"
+						placeholder="Your name"
+						required
+					/>
+					<button class="btn draw-border" id="start-btn">Join</button>
+				</div>
+			</div>
+			<div id="players-box">
+				<h3>Players currently online:</h3>
+				<br />
+				<table id="players-table"></table>
+			</div>
+			<div id="current-player"></div>
+			<button class="btn draw-border" id="start-game">Start game</button>
+		</div>
 		<section class="memory-game">
 			<div class="memory-card">
 				<img class="front-face" />
@@ -62,71 +83,21 @@
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/js/index.js"></script>
 		<script>
-			// const memoryCards = document.querySelectorAll(".memory-card");
-			// const memoryCardsArray = Array.from(memoryCards);
-			// const flags = [
-			// 	{
-			// 		src: "/img/br.svg",
-			// 		alt: "brazil",
-			// 	},
-			// 	{
-			// 		src: "/img/it.svg",
-			// 		alt: "italy",
-			// 	},
-			// 	{
-			// 		src: "/img/fr.svg",
-			// 		alt: "france",
-			// 	},
-			// 	{
-			// 		src: "/img/jp.svg",
-			// 		alt: "japan",
-			// 	},
-			// 	{
-			// 		src: "/img/au.svg",
-			// 		alt: "australia",
-			// 	},
-			// 	{
-			// 		src: "/img/kr.svg",
-			// 		alt: "korea",
-			// 	},
-			// 	{
-			// 		src: "/img/br.svg",
-			// 		alt: "brazil",
-			// 	},
-			// 	{
-			// 		src: "/img/it.svg",
-			// 		alt: "italy",
-			// 	},
-			// 	{
-			// 		src: "/img/fr.svg",
-			// 		alt: "france",
-			// 	},
-			// 	{
-			// 		src: "/img/jp.svg",
-			// 		alt: "japan",
-			// 	},
-			// 	{
-			// 		src: "/img/au.svg",
-			// 		alt: "australia",
-			// 	},
-			// 	{
-			// 		src: "/img/kr.svg",
-			// 		alt: "korea",
-			// 	},
-			// ];
-			// for (let i = flags.length - 1; i > 0; i--) {
-			// 	const j = Math.floor(Math.random() * (i + 1));
-			// 	[flags[i], flags[j]] = [flags[j], flags[i]];
-			// }
-			// console.log("flags array", flags);
-			// for (let i = 0; i < memoryCardsArray.length; i++) {
-			// 	let card = memoryCardsArray[i];
-			// 	card.firstElementChild.setAttribute("src", flags[i].src);
-			// 	card.firstElementChild.setAttribute("alt", flags[i].alt);
-			// 	card.setAttribute("data-flag", flags[i].alt);
-			// 	console.log(card.firstElementChild);
-			// 	console.log(card);
-			// }
+			let currentPlayer;
+			document.getElementById("start-btn").addEventListener("click", () => {
+				const name = document.getElementById("name").value;
+				document.getElementById("name").disabled = true;
+				document.getElementById("start-btn").hidden = true;
+				document.getElementById(
+					"players-table"
+				).innerHTML += `<tr><td>${name}</td></tr>`;
+				currentPlayer = name;
+				socket.emit("join", currentPlayer);
+			});
+			document.getElementById("start-game").addEventListener("click", () => {
+				document.getElementById("start-game").hidden = true;
+				socket.emit("start game", []);
+			});
 		</script>
 	</body>
 </html>
