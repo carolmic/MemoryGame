@@ -1,5 +1,56 @@
 const socket = io();
 const cards = document.querySelectorAll(".memory-card");
+const cardsArray = Array.from(cards);
+const flags = [
+	{
+		src: "/img/br.svg",
+		alt: "brazil",
+	},
+	{
+		src: "/img/it.svg",
+		alt: "italy",
+	},
+	{
+		src: "/img/fr.svg",
+		alt: "france",
+	},
+	{
+		src: "/img/jp.svg",
+		alt: "japan",
+	},
+	{
+		src: "/img/au.svg",
+		alt: "australia",
+	},
+	{
+		src: "/img/kr.svg",
+		alt: "korea",
+	},
+	{
+		src: "/img/br.svg",
+		alt: "brazil",
+	},
+	{
+		src: "/img/it.svg",
+		alt: "italy",
+	},
+	{
+		src: "/img/fr.svg",
+		alt: "france",
+	},
+	{
+		src: "/img/jp.svg",
+		alt: "japan",
+	},
+	{
+		src: "/img/au.svg",
+		alt: "australia",
+	},
+	{
+		src: "/img/kr.svg",
+		alt: "korea",
+	},
+];
 
 let hasFlippedCard = false;
 let lockBoard = false;
@@ -69,12 +120,26 @@ function resetBoard() {
 }
 
 (function shuffle() {
-	cards.forEach((card) => {
-		let randomPos = Math.floor(Math.random() * 12);
-		card.style.order = randomPos;
-	});
+	for (let i = flags.length - 1; i > 0; i--) {
+		let j = Math.floor(Math.random() * (i + 1));
+		[flags[i], flags[j]] = [flags[j], flags[i]];
+	}
+	for (let i = 0; i < cardsArray.length; i++) {
+		let card = cardsArray[i];
+		card.firstElementChild.setAttribute("src", flags[i].src);
+		card.firstElementChild.setAttribute("alt", flags[i].alt);
+		card.setAttribute("data-flag", flags[i].alt);
+	}
+	socket.emit("set order", cardsArray.map((card) => {
+		return {
+			dataset: card.dataset.flag,
+			firstElementChild: {
+				src: card.firstElementChild.src,
+				alt: card.firstElementChild.alt
+			}
+		};
+	}));
 })();
-
 cards.forEach((card) => card.addEventListener("click", flipCard));
 
 socket.on("card flipped", (data) => {
@@ -100,4 +165,15 @@ socket.on("match found", (data) => {
 		firstCard.removeEventListener("click", flipCard);
 		secondCard.removeEventListener("click", flipCard);
 	}
+});
+
+socket.on("order set", (data) => {
+	console.log(data);
+	data.forEach((card) => {
+		console.log(card.dataset);
+		const cardElement = document.querySelector(`.memory-card[data-flag="${card.dataset}"]`);
+		cardElement.firstElementChild.setAttribute("src", card.firstElementChild.src);
+		cardElement.firstElementChild.setAttribute("alt", card.firstElementChild.alt);
+
+	});
 });

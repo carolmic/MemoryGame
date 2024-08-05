@@ -18,6 +18,11 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
 	console.log("a user connected");
 
+	socket.on("set order", (data) => {
+		console.log("set order", data);
+		socket.broadcast.emit("order set", data);
+	});
+
 	socket.on("flip card", (data) => {
 		console.log("flip card", data);
 		socket.broadcast.emit("card flipped", data);
@@ -28,9 +33,9 @@ io.on("connection", (socket) => {
 		socket.broadcast.emit("cards unflipped", data);
 	});
 
-	socket.on("find match", () => {
-		console.log("find match");
-		socket.broadcast.emit("match found");
+	socket.on("find match", (data) => {
+		console.log("find match", data);
+		socket.broadcast.emit("match found", data);
 	});
 	
 	socket.on("disconnect", () => {

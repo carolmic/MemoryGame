@@ -8,53 +8,53 @@
 	</head>
 	<body>
 		<section class="memory-game">
-			<div class="memory-card" data-flag="brazil">
-				<img class="front-face" src="/img/br.svg" alt="Brazil" />
+			<div class="memory-card">
+				<img class="front-face" />
 				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
 			</div>
-			<div class="memory-card" data-flag="brazil">
-				<img class="front-face" src="/img/br.svg" alt="Brazil" />
+			<div class="memory-card">
+				<img class="front-face" />
 				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
 			</div>
 
-			<div class="memory-card" data-flag="italy">
-				<img class="front-face" src="/img/it.svg" alt="Italy" />
+			<div class="memory-card">
+				<img class="front-face" />
 				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
 			</div>
-			<div class="memory-card" data-flag="italy">
-				<img class="front-face" src="/img/it.svg" alt="Italy" />
+			<div class="memory-card">
+				<img class="front-face" />
 				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
 			</div>
-			<div class="memory-card" data-flag="france">
-				<img class="front-face" src="/img/fr.svg" alt="France" />
+			<div class="memory-card">
+				<img class="front-face" />
 				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
 			</div>
-			<div class="memory-card" data-flag="france">
-				<img class="front-face" src="/img/fr.svg" alt="France" />
+			<div class="memory-card">
+				<img class="front-face" />
 				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
 			</div>
-			<div class="memory-card" data-flag="japan">
-				<img class="front-face" src="/img/jp.svg" alt="Japan" />
+			<div class="memory-card">
+				<img class="front-face" />
 				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
 			</div>
-			<div class="memory-card" data-flag="japan">
-				<img class="front-face" src="/img/jp.svg" alt="Japan" />
+			<div class="memory-card">
+				<img class="front-face" />
 				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
 			</div>
-			<div class="memory-card" data-flag="australia">
-				<img class="front-face" src="/img/au.svg" alt="Australia" />
+			<div class="memory-card">
+				<img class="front-face" />
 				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
 			</div>
-			<div class="memory-card" data-flag="australia">
-				<img class="front-face" src="/img/au.svg" alt="Australia" />
+			<div class="memory-card">
+				<img class="front-face" />
 				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
 			</div>
-			<div class="memory-card" data-flag="korea">
-				<img class="front-face" src="/img/kr.svg" alt="Korea" />
+			<div class="memory-card">
+				<img class="front-face" />
 				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
 			</div>
-			<div class="memory-card" data-flag="korea">
-				<img class="front-face" src="/img/kr.svg" alt="Korea" />
+			<div class="memory-card">
+				<img class="front-face" />
 				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
 			</div>
 		</section>
@@ -62,7 +62,71 @@
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/js/index.js"></script>
 		<script>
-			const socket = io();
+			// const memoryCards = document.querySelectorAll(".memory-card");
+			// const memoryCardsArray = Array.from(memoryCards);
+			// const flags = [
+			// 	{
+			// 		src: "/img/br.svg",
+			// 		alt: "brazil",
+			// 	},
+			// 	{
+			// 		src: "/img/it.svg",
+			// 		alt: "italy",
+			// 	},
+			// 	{
+			// 		src: "/img/fr.svg",
+			// 		alt: "france",
+			// 	},
+			// 	{
+			// 		src: "/img/jp.svg",
+			// 		alt: "japan",
+			// 	},
+			// 	{
+			// 		src: "/img/au.svg",
+			// 		alt: "australia",
+			// 	},
+			// 	{
+			// 		src: "/img/kr.svg",
+			// 		alt: "korea",
+			// 	},
+			// 	{
+			// 		src: "/img/br.svg",
+			// 		alt: "brazil",
+			// 	},
+			// 	{
+			// 		src: "/img/it.svg",
+			// 		alt: "italy",
+			// 	},
+			// 	{
+			// 		src: "/img/fr.svg",
+			// 		alt: "france",
+			// 	},
+			// 	{
+			// 		src: "/img/jp.svg",
+			// 		alt: "japan",
+			// 	},
+			// 	{
+			// 		src: "/img/au.svg",
+			// 		alt: "australia",
+			// 	},
+			// 	{
+			// 		src: "/img/kr.svg",
+			// 		alt: "korea",
+			// 	},
+			// ];
+			// for (let i = flags.length - 1; i > 0; i--) {
+			// 	const j = Math.floor(Math.random() * (i + 1));
+			// 	[flags[i], flags[j]] = [flags[j], flags[i]];
+			// }
+			// console.log("flags array", flags);
+			// for (let i = 0; i < memoryCardsArray.length; i++) {
+			// 	let card = memoryCardsArray[i];
+			// 	card.firstElementChild.setAttribute("src", flags[i].src);
+			// 	card.firstElementChild.setAttribute("alt", flags[i].alt);
+			// 	card.setAttribute("data-flag", flags[i].alt);
+			// 	console.log(card.firstElementChild);
+			// 	console.log(card);
+			// }
 		</script>
 	</body>
 </html>
