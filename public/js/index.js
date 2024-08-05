@@ -192,7 +192,7 @@ socket.on("order set", (data) => {
 });
 
 socket.on("joined", (data) => {
-  document.getElementById("players-table").innerHTML += `<tr><td>${data}</td></tr>`
+  document.getElementById("players-table").innerHTML += `<tr class="player-info"><td class="player-name">${data.name}: </td><td class="player-points">${data.points}</td></tr>`
 });
 
 socket.on("game started", (data) => {

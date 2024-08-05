@@ -4,11 +4,17 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="/css/styles.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+			rel="stylesheet"
+		/>
 		<title>Memory Game</title>
 	</head>
 	<body>
-		<div class="register-player" id="register">
-			<div class="info-box">
+		<section class="container">
+			<div class="register-player" id="register">
 				<div class="form-group">
 					<input
 						type="text"
@@ -17,81 +23,82 @@
 						placeholder="Your name"
 						required
 					/>
-					<button class="btn draw-border" id="start-btn">Join</button>
+					<button class="btn" id="start-btn">Join</button>
 				</div>
+				<div id="players-box">
+					<h3>Players currently online:</h3>
+					<br />
+					<table id="players-table"></table>
+				</div>
+				<div id="current-player"></div>
+				<button class="btn" id="start-game">Start game</button>
 			</div>
-			<div id="players-box">
-				<h3>Players currently online:</h3>
-				<br />
-				<table id="players-table"></table>
-			</div>
-			<div id="current-player"></div>
-			<button class="btn draw-border" id="start-game">Start game</button>
-		</div>
-		<section class="memory-game">
-			<div class="memory-card">
-				<img class="front-face" />
-				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
-			</div>
-			<div class="memory-card">
-				<img class="front-face" />
-				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
-			</div>
+			<section class="memory-game">
+				<div class="memory-card">
+					<img class="front-face" />
+					<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+				</div>
+				<div class="memory-card">
+					<img class="front-face" />
+					<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+				</div>
 
-			<div class="memory-card">
-				<img class="front-face" />
-				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
-			</div>
-			<div class="memory-card">
-				<img class="front-face" />
-				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
-			</div>
-			<div class="memory-card">
-				<img class="front-face" />
-				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
-			</div>
-			<div class="memory-card">
-				<img class="front-face" />
-				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
-			</div>
-			<div class="memory-card">
-				<img class="front-face" />
-				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
-			</div>
-			<div class="memory-card">
-				<img class="front-face" />
-				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
-			</div>
-			<div class="memory-card">
-				<img class="front-face" />
-				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
-			</div>
-			<div class="memory-card">
-				<img class="front-face" />
-				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
-			</div>
-			<div class="memory-card">
-				<img class="front-face" />
-				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
-			</div>
-			<div class="memory-card">
-				<img class="front-face" />
-				<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
-			</div>
+				<div class="memory-card">
+					<img class="front-face" />
+					<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+				</div>
+				<div class="memory-card">
+					<img class="front-face" />
+					<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+				</div>
+				<div class="memory-card">
+					<img class="front-face" />
+					<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+				</div>
+				<div class="memory-card">
+					<img class="front-face" />
+					<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+				</div>
+				<div class="memory-card">
+					<img class="front-face" />
+					<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+				</div>
+				<div class="memory-card">
+					<img class="front-face" />
+					<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+				</div>
+				<div class="memory-card">
+					<img class="front-face" />
+					<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+				</div>
+				<div class="memory-card">
+					<img class="front-face" />
+					<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+				</div>
+				<div class="memory-card">
+					<img class="front-face" />
+					<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+				</div>
+				<div class="memory-card">
+					<img class="front-face" />
+					<img class="back-face" src="/img/olympics.svg" alt="Olympics" />
+				</div>
+			</section>
 		</section>
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/js/index.js"></script>
 		<script>
 			let currentPlayer;
+			let currentPlayerPoints = 0;
 			document.getElementById("start-btn").addEventListener("click", () => {
 				const name = document.getElementById("name").value;
 				document.getElementById("name").disabled = true;
 				document.getElementById("start-btn").hidden = true;
+				currentPlayer = {name, points: 0};
 				document.getElementById(
 					"players-table"
-				).innerHTML += `<tr><td>${name}</td></tr>`;
-				currentPlayer = name;
+				).innerHTML += `<tr class="player-info"><td class="player-name">${currentPlayer.name}: </td><td class="player-points">${currentPlayer.points}</td></tr>`;
 				socket.emit("join", currentPlayer);
 			});
 			document.getElementById("start-game").addEventListener("click", () => {
