@@ -59,7 +59,7 @@ let firstCard, secondCard;
 function flipCard() {
 	if (lockBoard) return;
 	if (this === firstCard) return;
-
+	
 	this.classList.add("flip");
 
 	socket.emit("flip card", {
@@ -130,7 +130,6 @@ function resetBoard() {
 		card.firstElementChild.setAttribute("alt", flags[i].alt);
 		card.setAttribute("data-flag", flags[i].alt);
 	}
-	console.log("cardsArray", cardsArray);
 	socket.emit(
 		"set order",
 		cardsArray.map((card) => {
@@ -148,7 +147,7 @@ cards.forEach((card) => card.addEventListener("click", flipCard));
 
 socket.on("card flipped", (data) => {
 	const card = document.querySelector(`.memory-card[data-flag="${data.id}"]`);
-	if (card) {
+	if (card && !card.classList.contains("flip") && card.getAttribute("data-flag") === data.id) {
 		card.classList.add("flip");
 	}
 });
@@ -187,5 +186,6 @@ socket.on("order set", (data) => {
 			<img src="${data[i].firstElementChild.src}" alt="${data[i].firstElementChild.alt}" class="front-face" />
 			<img src="/img/olympics.svg" alt="back" class="olympics" />
 		`;
+		player2Cards[i].setAttribute("data-flag", data[i].dataset);
 	};
 });
