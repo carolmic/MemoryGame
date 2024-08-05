@@ -166,12 +166,12 @@ socket.on("cards unflipped", (data) => {
 });
 
 socket.on("match found", (data) => {
-	const firstCard = document.querySelector(
-		`.memory-card[data-flag="${data.firstCard}"]`
-	);
-	const secondCard = document.querySelector(
-		`.memory-card[data-flag="${data.secondCard}"]`
-	);
+	const allCards = document.querySelectorAll(".memory-card");	
+	const allCardsArray = Array.from(allCards);
+	const matchCards = allCardsArray.filter((card) => card.dataset.flag === data.firstCard);
+	const firstCard = matchCards[0].classList.add("flip");
+	const secondCard = matchCards[1].classList.add("flip");
+
 	if (firstCard && secondCard) {
 		firstCard.removeEventListener("click", flipCard);
 		secondCard.removeEventListener("click", flipCard);
