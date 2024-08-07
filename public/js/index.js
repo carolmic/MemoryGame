@@ -56,7 +56,7 @@ let matches = 0;
 let isOver = false;
 let hasFlippedCard = false;
 let lockBoard = true;
-let firstCard, secondCard;
+let firstCard, secondCard, indexFirstCard, indexSecondCard;
 let currentPlayer, nextPlayer, thisPlayer;
 let players = [];
 
@@ -102,20 +102,24 @@ function turns() {
 function flipCard() {
 	if (thisPlayer.lockBoard || currentPlayer.lockBoard) return;
 	if (this === firstCard) return;
-
 	this.classList.add("flip");
 
+	let index = cardsArray.indexOf(this);
+
 	socket.emit("flip card", {
-		id: this.dataset.flag,
+		id: index,
+		flag: this.dataset.flag,
 	});
 
 	if (!hasFlippedCard) {
 		hasFlippedCard = true;
 		firstCard = this;
+		indexFirstCard = cardsArray.indexOf(this);
 		return;
 	}
 
 	secondCard = this;
+	indexSecondCard = cardsArray.indexOf(this);
 	checkForMatch();
 }
 
@@ -174,12 +178,12 @@ function unflipCards() {
 	lockBoard = true;
 
 	setTimeout(() => {
-		firstCard.classList.remove("flip");
-		secondCard.classList.remove("flip");
+		cardsArray[indexFirstCard].classList.remove("flip");
+		cardsArray[indexSecondCard].classList.remove("flip");
 
 		socket.emit("unflip cards", {
-			firstCard: firstCard.dataset.flag,
-			secondCard: secondCard.dataset.flag,
+			firstCard: indexFirstCard,
+			secondCard: indexSecondCard,
 		});
 
 		resetBoard();
@@ -237,23 +241,19 @@ socket.on("game finished", (data) => {
 });
 
 socket.on("card flipped", (data) => {
-	const card = document.querySelector(`.memory-card[data-flag="${data.id}"]`);
+	const card = cardsArray[data.id];
 	if (
 		card &&
 		!card.classList.contains("flip") &&
-		card.getAttribute("data-flag") === data.id
+		card.getAttribute("data-flag") === data.flag
 	) {
 		card.classList.add("flip");
 	}
 });
 
 socket.on("cards unflipped", (data) => {
-	const firstCard = document.querySelector(
-		`.memory-card[data-flag="${data.firstCard}"]`
-	);
-	const secondCard = document.querySelector(
-		`.memory-card[data-flag="${data.secondCard}"]`
-	);
+	const firstCard = cardsArray[data.firstCard];
+	const secondCard = cardsArray[data.secondCard];
 	if (firstCard && secondCard) {
 		firstCard.classList.remove("flip");
 		secondCard.classList.remove("flip");
