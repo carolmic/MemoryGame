@@ -19,6 +19,12 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
 	console.log("a user connected");
 
+	socket.on("set current player", (data) => {
+		console.log("set current player", data);
+		socket.broadcast.emit("current player set", data);
+		socket.emit("set current player", data);
+	});
+
 	socket.on("start game", (data) => {
 		data.push(players);
 		socket.broadcast.emit("game started", data);

@@ -1,5 +1,3 @@
-
-
 const socket = io();
 const cards = document.querySelectorAll(".memory-card");
 let cardsArray = Array.from(cards);
@@ -54,13 +52,15 @@ const flags = [
 	},
 ];
 let hasFlippedCard = false;
-let lockBoard = false;
+let lockBoard = true;
 let firstCard, secondCard;
+let thisPlayer, nextPlayer;
+let thisCurrentPlayer = thisPlayer;
 
 function flipCard() {
 	if (lockBoard) return;
 	if (this === firstCard) return;
-	
+
 	this.classList.add("flip");
 
 	socket.emit("flip card", {
@@ -73,8 +73,47 @@ function flipCard() {
 		return;
 	}
 
+	setTurn(thisCurrentPlayer);
 	secondCard = this;
 	checkForMatch();
+}
+
+function setTurn(player) {
+	let players = document.querySelectorAll(".player-info");
+	let playersInfo = Array.from(players).map((player) => player.outerText);
+	let playersName = playersInfo.map((player) => player.split(":")[0]);
+	let playersPoints = playersInfo.map((player) => player.split("\n")[1].parseInt());
+	let playersObject = [
+		{
+			name: playersName[0],
+			points: playersPoints[0],
+		},
+		{
+			name: playersName[1],
+			points: playersPoints[1],
+		}
+	];
+	thisPlayer = playersObject[0];
+	nextPlayer = playersObject[1];
+	console.log("player", player);
+	console.log("thisPlayer", thisPlayer);
+	console.log("nextPlayer", nextPlayer);
+	lockBoard = true;
+	if (player === thisPlayer) {
+		lockBoard = false;
+		if (player === thisPlayer) {
+			thisCurrentPlayer = nextPlayer;
+		} else {
+			thisCurrentPlayer = thisPlayer;
+		}
+	} else {
+		lockBoard = true;
+	}
+	socket.emit("set current player", thisCurrentPlayer);
+	document.getElementById(
+		"current-player"
+	).innerHTML = `<p>${thisCurrentPlayer.name}</p>`;
+	console.log("thisCurrentPlayer", thisCurrentPlayer);
 }
 
 function checkForMatch() {
@@ -86,9 +125,10 @@ function checkForMatch() {
 			secondCard: secondCard.dataset.flag,
 		});
 		disableCards();
+		setTurn(thisPlayer);
 		return;
 	}
-
+	setTurn(nextPlayer);
 	unflipCards();
 }
 
@@ -148,7 +188,11 @@ cards.forEach((card) => card.addEventListener("click", flipCard));
 
 socket.on("card flipped", (data) => {
 	const card = document.querySelector(`.memory-card[data-flag="${data.id}"]`);
-	if (card && !card.classList.contains("flip") && card.getAttribute("data-flag") === data.id) {
+	if (
+		card &&
+		!card.classList.contains("flip") &&
+		card.getAttribute("data-flag") === data.id
+	) {
 		card.classList.add("flip");
 	}
 });
@@ -167,9 +211,11 @@ socket.on("cards unflipped", (data) => {
 });
 
 socket.on("match found", (data) => {
-	const allCards = document.querySelectorAll(".memory-card");	
+	const allCards = document.querySelectorAll(".memory-card");
 	const allCardsArray = Array.from(allCards);
-	const matchCards = allCardsArray.filter((card) => card.dataset.flag === data.firstCard);
+	const matchCards = allCardsArray.filter(
+		(card) => card.dataset.flag === data.firstCard
+	);
 	const firstCard = matchCards[0].classList.add("flip");
 	const secondCard = matchCards[1].classList.add("flip");
 
@@ -188,14 +234,24 @@ socket.on("order set", (data) => {
 			<img src="/img/olympics.svg" alt="Olympics" class="back-face" />
 		`;
 		player2Cards[i].setAttribute("data-flag", data[i].dataset);
-	};
+	}
 });
 
 socket.on("joined", (data) => {
-  document.getElementById("players-table").innerHTML += `<tr class="player-info"><td class="player-name">${data.name}: </td><td class="player-points">${data.points}</td></tr>`
+	document.getElementById(
+		"players-table"
+	).innerHTML += `<tr class="player-info"><td class="player-name">${data.name}: </td><td class="player-points">${data.points}</td></tr>`;
 });
 
 socket.on("game started", (data) => {
-	console.log("game started", data);
+	lockBoard = false;
 	document.getElementById("start-game").hidden = true;
+	thisPlayer = data[0];
+	nextPlayer = data[1];
+});
+
+socket.on("current player set", (data) => {
+	console.log("current player set", data);
+	document.getElementById("current-player").innerHTML = `<p>${data.name}</p>`;
+	thisCurrentPlayer = data;
 });
