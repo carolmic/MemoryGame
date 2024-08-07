@@ -25,12 +25,18 @@
 					/>
 					<button class="btn" id="start-btn">Join</button>
 				</div>
+				<div class="current-player-info">
+					<h3 class="current-player" id="current-player" hidden="true">
+						Current player:
+					</h3>
+					<p class="current-player-name" id="current-player-name" hidden="true"></p>
+				</div>
+				<br />
 				<div id="players-box">
-					<h3>Players currently online:</h3>
+					<h3>Players online:</h3>
 					<br />
 					<table id="players-table"></table>
 				</div>
-				<div id="current-player"></div>
 				<button class="btn" id="start-game">Start game</button>
 			</div>
 			<section class="memory-game">
@@ -88,23 +94,6 @@
 
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/js/index.js"></script>
-		<script>
-			let currentPlayer;
-			let currentPlayerPoints = 0;
-			document.getElementById("start-btn").addEventListener("click", () => {
-				const name = document.getElementById("name").value;
-				document.getElementById("name").disabled = true;
-				document.getElementById("start-btn").hidden = true;
-				currentPlayer = {name, points: 0};
-				document.getElementById(
-					"players-table"
-				).innerHTML += `<tr class="player-info"><td class="player-name">${currentPlayer.name}: </td><td class="player-points">${currentPlayer.points}</td></tr>`;
-				socket.emit("join", currentPlayer);
-			});
-			document.getElementById("start-game").addEventListener("click", () => {
-				document.getElementById("start-game").hidden = true;
-				socket.emit("start game", []);
-			});
-		</script>
+		<script></script>
 	</body>
 </html>

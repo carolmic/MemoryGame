@@ -19,10 +19,20 @@ app.get("/", (req, res) => {
 io.on("connection", (socket) => {
 	console.log("a user connected");
 
+	socket.on("finish game", (data) => {
+		console.log("finish game", data);
+		socket.broadcast.emit("game finished", data);
+	})
+
 	socket.on("start game", (data) => {
 		data.push(players);
 		socket.broadcast.emit("game started", data);
 		socket.emit("start game", data);
+	});
+
+	socket.on("set turns", (data) => {
+		console.log("set turns", data);
+		socket.broadcast.emit("turns set", data);
 	})
 
 	socket.on("join", (data) => {

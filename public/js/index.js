@@ -1,5 +1,3 @@
-
-
 const socket = io();
 const cards = document.querySelectorAll(".memory-card");
 let cardsArray = Array.from(cards);
@@ -53,14 +51,58 @@ const flags = [
 		alt: "korea",
 	},
 ];
+
+let matches = 0;
+let isOver = false;
 let hasFlippedCard = false;
-let lockBoard = false;
+let lockBoard = true;
 let firstCard, secondCard;
+let currentPlayer, nextPlayer, thisPlayer;
+let players = [];
+
+(function startGame() {
+	document.getElementById("start-btn").addEventListener("click", () => {
+		const name = document.getElementById("name").value;
+		document.getElementById("name").disabled = true;
+		document.getElementById("start-btn").hidden = true;
+		document.getElementById("current-player").hidden = false;
+		document.getElementById("current-player-name").hidden = false;
+		currentPlayer = { name, points: 0, lockBoard: false };
+		thisPlayer = currentPlayer;
+		document.getElementById(
+			"players-table"
+		).innerHTML += `<tr class="player-info"><td class="player-name">${currentPlayer.name}: </td><td id="player-points" class="player-points">${currentPlayer.points}</td></tr>`;
+		players.push(currentPlayer);
+		document.getElementById(
+			"current-player-name"
+		).innerHTML = `<p>${currentPlayer.name}</p>`;
+		socket.emit("join", currentPlayer);
+	});
+	document.getElementById("start-game").addEventListener("click", () => {
+		document.getElementById("start-game").hidden = true;
+		nextPlayer = players.find((player) => player !== currentPlayer);
+		nextPlayer.lockBoard = true;
+		socket.emit("set turns", { currentPlayer, nextPlayer });
+		socket.emit("start game", []);
+		lockBoard = true;
+		turns();
+	});
+})();
+
+function turns() {
+	if (currentPlayer.name === thisPlayer.name) {
+		currentPlayer.lockBoard = false;
+		thisPlayer.lockBoard = false;
+		nextPlayer.lockBoard = true;
+	} else {
+		thisPlayer.lockBoard = true;
+	}
+}
 
 function flipCard() {
-	if (lockBoard) return;
+	if (thisPlayer.lockBoard || currentPlayer.lockBoard) return;
 	if (this === firstCard) return;
-	
+
 	this.classList.add("flip");
 
 	socket.emit("flip card", {
@@ -81,14 +123,43 @@ function checkForMatch() {
 	let isMatch = firstCard.dataset.flag === secondCard.dataset.flag;
 
 	if (isMatch) {
+		currentPlayer.points++;
+		matches++;
 		socket.emit("find match", {
 			firstCard: firstCard.dataset.flag,
 			secondCard: secondCard.dataset.flag,
+			currentPlayer: currentPlayer,
+			matches: matches,
+		});
+		socket.emit("set turns", { currentPlayer, nextPlayer });
+		document.querySelectorAll(".player-info").forEach((player) => {
+			if (player.firstElementChild.textContent.includes(currentPlayer.name)) {
+				player.lastElementChild.innerHTML = currentPlayer.points;
+			}
 		});
 		disableCards();
+		if (matches === cardsArray.length / 2) {
+			socket.emit("finish game", { currentPlayer, nextPlayer });
+			finishGame();
+			return;
+		}
 		return;
+	} else {
+		let currentPlayerValue = currentPlayer;
+		currentPlayer = nextPlayer;
+		nextPlayer = currentPlayerValue;
+		currentPlayer.lockBoard = false;
+		nextPlayer.lockBoard = true;
+		if (nextPlayer.name === thisPlayer.name) {
+			thisPlayer.lockBoard = true;
+		}
+		document.getElementById(
+			"current-player-name"
+		).innerHTML = `<p>${currentPlayer.name}</p>`;
+		socket.emit("set turns", { currentPlayer, nextPlayer });
 	}
 
+	turns();
 	unflipCards();
 }
 
@@ -144,11 +215,34 @@ function resetBoard() {
 		})
 	);
 })();
+
+function finishGame() {
+	let playerPoints = [currentPlayer.points, nextPlayer.points];
+	let maxPoints = Math.max(...playerPoints);
+	let winner =
+		playerPoints.indexOf(maxPoints) === 0 ? currentPlayer : nextPlayer;
+	document.getElementById(
+		"current-player"
+	).innerHTML = `<p class="winner">${winner.name} wins!</p>`;
+	document.getElementById("current-player-name").hidden = true;
+	socket.emit("finish game", {
+		currentPlayer: currentPlayer,
+		nextPlayer: nextPlayer,
+	});
+}
 cards.forEach((card) => card.addEventListener("click", flipCard));
+
+socket.on("game finished", (data) => {
+	finishGame();
+});
 
 socket.on("card flipped", (data) => {
 	const card = document.querySelector(`.memory-card[data-flag="${data.id}"]`);
-	if (card && !card.classList.contains("flip") && card.getAttribute("data-flag") === data.id) {
+	if (
+		card &&
+		!card.classList.contains("flip") &&
+		card.getAttribute("data-flag") === data.id
+	) {
 		card.classList.add("flip");
 	}
 });
@@ -167,11 +261,25 @@ socket.on("cards unflipped", (data) => {
 });
 
 socket.on("match found", (data) => {
-	const allCards = document.querySelectorAll(".memory-card");	
+	document.querySelectorAll(".player-info").forEach((player) => {
+		if (player.firstElementChild.textContent.includes(data.currentPlayer.name)) {
+			player.lastElementChild.innerHTML = data.currentPlayer.points;
+		}
+	});
+	const allCards = document.querySelectorAll(".memory-card");
 	const allCardsArray = Array.from(allCards);
-	const matchCards = allCardsArray.filter((card) => card.dataset.flag === data.firstCard);
+	const matchCards = allCardsArray.filter(
+		(card) => card.dataset.flag === data.firstCard
+	);
 	const firstCard = matchCards[0].classList.add("flip");
 	const secondCard = matchCards[1].classList.add("flip");
+	matches = data.matches;
+	if (matches === cardsArray.length / 2) {
+		socket.emit("finish game", {
+			currentPlayer: data.currentPlayer,
+			nextPlayer: data.nextPlayer,
+		});
+	}
 
 	if (firstCard && secondCard) {
 		firstCard.removeEventListener("click", flipCard);
@@ -188,14 +296,28 @@ socket.on("order set", (data) => {
 			<img src="/img/olympics.svg" alt="Olympics" class="back-face" />
 		`;
 		player2Cards[i].setAttribute("data-flag", data[i].dataset);
-	};
+	}
 });
 
 socket.on("joined", (data) => {
-  document.getElementById("players-table").innerHTML += `<tr class="player-info"><td class="player-name">${data.name}: </td><td class="player-points">${data.points}</td></tr>`
+	document.getElementById(
+		"players-table"
+	).innerHTML += `<tr class="player-info"><td class="player-name">${data.name}: </td><td id="player-points" class="player-points">${data.points}</td></tr>`;
+	players.push(data);
+});
+
+socket.on("turns set", (data) => {
+	nextPlayer = data.nextPlayer;
+	currentPlayer = data.currentPlayer;
+	document.getElementById("current-player").hidden = false;
+	document.getElementById("current-player-name").hidden = false;
+	document.getElementById(
+		"current-player-name"
+	).innerHTML = `<p>${data.currentPlayer.name}</p>`;
+	turns();
 });
 
 socket.on("game started", (data) => {
-	console.log("game started", data);
+	nextPlayer = players.find((player) => player !== data.currentPlayer);
 	document.getElementById("start-game").hidden = true;
 });
